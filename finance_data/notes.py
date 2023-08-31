@@ -1,10 +1,14 @@
 from finance_data_base import FinanceDataBase
 from constants import STANDARD_COLUMNS
+from pydantic import BaseModel
+
+class NotesConfig(BaseModel):
+    note: list[dict[str, list[str]]]
 
 class FinanceDataWithNotes(FinanceDataBase):
     NOTES_COLUMN = 'notes'
 
-    def __init__(self, finance_data, notes_config):
+    def __init__(self, finance_data: FinanceDataBase, notes_config):
         self.finance_data = finance_data
         self.notes_config = notes_config
 

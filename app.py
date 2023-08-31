@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import calendar
 import json
-from constants import DATE, NAME, AMOUNT, CATEGORY, NOTES
+from finance_data.constants import DATE, NAME, AMOUNT, CATEGORY, NOTES
 
 def main():
     print("Hello World!")
