@@ -1,5 +1,6 @@
 import pandas as pd
 from constants import STANDARD_COLUMNS
+from datetime import datetime
 
 class FinanceDataBase:
     std_columns_list = [STANDARD_COLUMNS['DATE'], STANDARD_COLUMNS['NAME'], STANDARD_COLUMNS['AMOUNT'], STANDARD_COLUMNS['SOURCE']]
@@ -23,6 +24,9 @@ class FinanceDataBase:
 
     def standardize(self, column_mapping):
         self.preprocess()
+
+        self.df[STANDARD_COLUMNS['DATE']] = self.df[STANDARD_COLUMNS['DATE']].astype(str)
+        self.df.apply(lambda row: datetime.strptime(row[STANDARD_COLUMNS['DATE']], self.date_format), axis=1)
 
         for std_column in self.std_columns_list:
             assert std_column in column_mapping, f"column_mapping must contain {std_column}"
