@@ -1,6 +1,13 @@
+from __future__ import annotations
 import pandas as pd
 from constants import STANDARD_COLUMNS
 from datetime import datetime
+from pydantic import BaseModel
+
+class FinanceDataBaseConfig(BaseModel):
+    source: str
+    column_mapping: dict[str, str]
+    date_format: str
 
 class FinanceDataBase:
     std_columns_list = [STANDARD_COLUMNS['DATE'], STANDARD_COLUMNS['NAME'], STANDARD_COLUMNS['AMOUNT'], STANDARD_COLUMNS['SOURCE']]
@@ -9,12 +16,18 @@ class FinanceDataBase:
         self.df = pd.DataFrame(columns=self.std_columns_list)
 
     @classmethod
-    def from_csv(cls, path, source):
-        return cls().load(path, source) 
+    def from_csv(cls, path: str, config: FinanceDataBaseConfig):
+        return cls().load(path, config)
 
-    def load(self, path, source):
+    def load(self, path: str, config: FinanceDataBaseConfig):
         self.df = pd.read_csv(path)
-        self.df[STANDARD_COLUMNS['SOURCE']] = source
+        self.df[STANDARD_COLUMNS['SOURCE']] = config.source
+
+        self.config = config
+        for std_column in self.std_columns_list:
+            assert std_column in self.config.column_mapping, f"column_mapping must contain {std_column}"
+
+        self.process()
 
     def preprocess(self):
         pass
@@ -22,32 +35,29 @@ class FinanceDataBase:
     def postprocess(self):
         pass
 
-    def standardize(self, column_mapping):
-        self.preprocess()
-
+    def standardize(self):
+        # convert date strings to datetime
         self.df[STANDARD_COLUMNS['DATE']] = self.df[STANDARD_COLUMNS['DATE']].astype(str)
-        self.df.apply(lambda row: datetime.strptime(row[STANDARD_COLUMNS['DATE']], self.date_format), axis=1)
+        self.df.apply(lambda row: datetime.strptime(row[STANDARD_COLUMNS['DATE']], self.config.date_format), axis=1)
 
-        for std_column in self.std_columns_list:
-            assert std_column in column_mapping, f"column_mapping must contain {std_column}"
-        self.df = self.df.rename(columns=column_mapping)
-
-        self.postprocess()
-
-    def combine(self, other):
-        # TODO
-        other.standardize()
-        other.filter_by_names()
-
-        self.df = pd.concat([self.df, other.df], ignore_index=True)
-
-        # sort and filter by date
-        self.filter_by_date()
+        # rename columns
+        self.df = self.df.rename(columns=self.config.column_mapping)
 
         # remove trailing whitespace
         self.df[STANDARD_COLUMNS['NAME']] = self.df.apply(lambda row: row[STANDARD_COLUMNS['NAME']].strip(), axis=1)
 
-    def to_csv(self, path):
+    def process(self):
+        self.preprocess()
+        self.standardize()
+        self.postprocess()
+
+    def combine(self, other: FinanceDataBase):
+        assert self.df != None and other.df != None, "Both data sets must be initialized"
+
+        self.df = pd.concat([self.df, other.df], ignore_index=True)
+        self.df = self.df.sort_values(by=STANDARD_COLUMNS['DATE'])
+
+    def to_csv(self, path: str):
         self.df.to_csv(path, index=False)
 
     
