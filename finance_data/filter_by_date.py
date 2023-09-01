@@ -2,22 +2,19 @@ import calendar
 import pandas as pd
 from finance_data_base import FinanceDataBase
 from constants import STANDARD_COLUMNS
+import datetime
 
-class FinanceDataFilteredByDate(FinanceDataBase):
-    # maps the first 3 characters of a month to its index.
-    # e.g. "jan" -> 1
-    MONTH_MAPPING = {month.lower(): index for index, month in enumerate(calendar.month_abbr) if month}
-    
-    def __init__(self, finance_data, month, year):
+class FinanceDataFilterByDate(FinanceDataBase): 
+    def __init__(self, finance_data, start: datetime.datetime, end: datetime.datetime = None):
         self.finance_data = finance_data
-        self.month = month
-        self.year = year
+        self.start = start
+        self.end = end
+        if end is None:
+            # default to end of month defined by start
+            self.end = datetime.datetime(start.year, start.month, calendar.monthrange(start.year, start.month)[1])
 
     def filter_by_date(self):
-        month = self.MONTH_MAPPING[self.month[:3]]
-        day = calendar.monthrange(int(year), month)[1]
-        self.df = self.df[(self.df[STANDARD_COLUMNS['DATE']] >= f'{year}-{month}-1') & (self.df[STANDARD_COLUMNS['DATE']] <= f'{year}-{month}-{day}')]
-        self.df = self.df.sort_values(by=STANDARD_COLUMNS['DATE'])
+        self.df = self.df[(self.df[STANDARD_COLUMNS['DATE']] >= self.start) & (self.df[STANDARD_COLUMNS['DATE']] <= self.end)]
 
     def postprocess(self):
         super.postprocess()
