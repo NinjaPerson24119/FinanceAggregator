@@ -3,17 +3,17 @@ from finance_data import STANDARD_COLUMNS
 from pydantic import BaseModel
 import pandas as pd
 
+NOTES_COLUMN = 'notes'
+
 class NotesConfig(BaseModel):
     note: dict[str, list[str]]
 
 class FinanceDataWithNotes(FinanceData):
-    NOTES_COLUMN = 'notes'
-
     def __init__(self, finance_data: FinanceData, notes_config: NotesConfig):
         self.finance_data = finance_data
         self.notes_config = notes_config
 
-    def generate_notes_for_row(self, row: pd.Series):
+    def generate_notes_for_row(self, row: pd.Series) -> str:
         notes = ''
         for note, substrings in self.notes_config.items():
             for substring in substrings:
@@ -22,7 +22,7 @@ class FinanceDataWithNotes(FinanceData):
         return notes
 
     def add_and_prefill_notes(self):
-        self.df[self.NOTES_COLUMN] = self.df.apply(lambda row: self.generate_notes_for_row(row), axis=1)
+        self.df[NOTES_COLUMN] = self.df.apply(lambda row: self.generate_notes_for_row(row), axis=1)
 
     def postprocess(self):
         super().postprocess()
