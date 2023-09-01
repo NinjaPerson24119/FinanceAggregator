@@ -105,7 +105,7 @@ class FinanceData:
             self.__df = postprocessor.postprocess(self.__df)
 
     def combine(self, other: FinanceData):
-        if other.__df.empty():
+        if other.__df.empty:
             return
 
         self.__df = pd.concat([self.__df, other.__df], ignore_index=True)
