@@ -25,6 +25,7 @@ class FinanceDataWithCategories(FinanceDataBase):
     def categorize(self):
         self.df[self.CATEGORY_COLUMN] = self.df.apply(lambda row: self.category_from_row(row), axis=1)
 
+    def print_uncategorized_names(self):
         uncategorized_names = self.df[self.df[self.CATEGORY_COLUMN] == ''][STANDARD_COLUMNS['NAME']].unique()
         if len(uncategorized_names):
             print(f"\n{len(uncategorized_names)} Uncategorized Names...\n")
@@ -34,3 +35,4 @@ class FinanceDataWithCategories(FinanceDataBase):
     def postprocess(self):
         super().postprocess()
         self.categorize()
+        self.print_uncategorized_names()
