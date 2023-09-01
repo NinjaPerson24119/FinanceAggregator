@@ -44,6 +44,7 @@ class FinanceData:
         return instance
 
     def __load(self, path: str, config: FinanceDataConfigWithProcessors):
+        print(f"Loading {config.source}...")
         self.__config = config
         self.__df = pd.read_csv(path)
 
@@ -90,7 +91,6 @@ class FinanceData:
                 date_str, self.__config.date_format
             ))
         )
-        print(self.__df.head())
 
         # remove trailing whitespace
         self.__df[STANDARD_COLUMNS["NAME"]] = self.__df.apply(
@@ -100,13 +100,13 @@ class FinanceData:
     def __process(self):
         # preprocessors cannot expect the standard columns to be present
         for preprocessor in self.__config.preprocessors:
-            print(f"Preprocessing with {preprocessor.__class__.__name__}...")
+            print(f"\tPreprocessing with {preprocessor.__class__.__name__}...")
             self.__df = preprocessor.preprocess(self.__df)
 
         self.__standardize()
 
         for postprocessor in self.__config.postprocessors:
-            print(f"Postprocessing with {postprocessor.__class__.__name__}...")
+            print(f"\tPostprocessing with {postprocessor.__class__.__name__}...")
             self.__df = postprocessor.postprocess(self.__df)
 
     def combine(self, other: FinanceData):
@@ -118,6 +118,6 @@ class FinanceData:
 
     def to_csv(self, path: str):
         if self.__df.shape[0] == 0:
-            print("No data to save. Skipping write to CSV.")
+            print("\tNo data to save. Skipping write to CSV.")
             return
         self.__df.to_csv(path, index=False)
