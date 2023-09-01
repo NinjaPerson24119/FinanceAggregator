@@ -5,15 +5,18 @@ import pandas as pd
 from finance_data.constants import STANDARD_COLUMNS
 from datetime import datetime
 from pydantic import BaseModel
-from preprocessors import Preprocessor
-from postprocessors import Postprocessor
+from .preprocessors import Preprocessor
+from .postprocessors import Postprocessor
 
 class FinanceDataConfig(BaseModel):
     source: str
     column_mapping: dict[str, str]
     date_format: str
 
-class FinanceDataConfigWithProcessors(FinanceDataConfig):
+class FinanceDataConfigWithProcessors:
+    source: str
+    column_mapping: dict[str, str]
+    date_format: str
     preprocessors: list[Preprocessor] = []
     postprocessors: list[Postprocessor] = []
 

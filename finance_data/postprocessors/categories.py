@@ -1,24 +1,22 @@
 from finance_data.constants import STANDARD_COLUMNS
 from pydantic import BaseModel
 import pandas as pd
-from postprocessor import Postprocessor
+from .postprocessor import Postprocessor
 
 CATEGORY_COLUMN = 'category'
 
-class CategoryConfig(BaseModel):
-    category: str
-    # substrings to match in name
-    substrings: list[str]
+class CategoriesConfig(BaseModel):
+    categories: dict[str, list[str]]
 
 class WithCategories(Postprocessor):
-    def __init__(self, categories: list[CategoryConfig]):
-        self.categories = categories
+    def __init__(self, categories_config: list[CategoriesConfig]):
+        self.categories_config = categories_config
 
     def category_from_row(self, row: pd.Series) -> str:
-        for category in self.categories:
-            for substring in self.category.substrings:
+        for category_name, substrings in self.categories_config.items():
+            for substring in substrings:
                 if substring.lower() in row[STANDARD_COLUMNS['NAME']].lower():
-                    return category
+                    return category_name
         return ''
 
     def categorize(self, df: pd.DataFrame) -> pd.DataFrame:

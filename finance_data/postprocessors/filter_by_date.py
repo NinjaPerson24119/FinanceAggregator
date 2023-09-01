@@ -2,7 +2,7 @@ import calendar
 import pandas as pd
 from finance_data.constants import STANDARD_COLUMNS
 import datetime
-from postprocessor import Postprocessor
+from .postprocessor import Postprocessor
 
 class FilterByDate(Postprocessor): 
     def __init__(self, start: datetime.datetime, end: datetime.datetime = None):
