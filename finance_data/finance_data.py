@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 STANDARD_COLUMNS = {"DATE": "date", "NAME": "name", "AMOUNT": "amount"}
 
-class FinanceDataBaseConfig(BaseModel):
+class FinanceDataConfig(BaseModel):
     source: str
     column_mapping: dict[str, str]
     date_format: str
@@ -18,10 +18,10 @@ class FinanceData:
         self.df = pd.DataFrame(columns=self.std_columns_list)
 
     @classmethod
-    def from_csv(cls, path: str, config: FinanceDataBaseConfig):
+    def from_csv(cls, path: str, config: FinanceDataConfig):
         return cls().load(path, config)
 
-    def load(self, path: str, config: FinanceDataBaseConfig):
+    def load(self, path: str, config: FinanceDataConfig):
         self.df = pd.read_csv(path)
         self.df[STANDARD_COLUMNS['SOURCE']] = config.source
 

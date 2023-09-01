@@ -1,8 +1,5 @@
 from pydantic import BaseModel
-from finance_data.finance_data import FinanceDataBaseConfig
-from finance_data.categories import CategoryConfig
-from finance_data.combine_in_out_columns import CombineInOutAmountConfig
-from finance_data.notes import NotesConfig
+from finance_data import FinanceDataConfig, CategoryConfig, CombineInOutColumnsConfig, NotesConfig
 
 class OutputConfig(BaseModel):
     path: str
@@ -10,10 +7,10 @@ class OutputConfig(BaseModel):
     year: str
 
 class Source(BaseModel):
-    finance_data_config: FinanceDataBaseConfig
+    finance_data_config: FinanceDataConfig
 
     negate_amount: bool
-    combine_in_out_amount_config: CombineInOutAmountConfig
+    combine_in_out_amount_config: CombineInOutColumnsConfig
 
     # source specific filters
     filter_names_with_substrings: list[str]
