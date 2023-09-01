@@ -12,6 +12,8 @@ class FinanceDataConfig(BaseModel):
     source: str
     column_mapping: dict[str, str]
     date_format: str
+
+class FinanceDataConfigWithProcessors(FinanceDataConfig):
     preprocessors: list[Preprocessor] = []
     postprocessors: list[Postprocessor] = []
 
@@ -22,10 +24,10 @@ class FinanceData:
         self.__df = pd.DataFrame(columns=self.__std_columns_list)
 
     @classmethod
-    def from_csv(cls, path: str, config: FinanceDataConfig):
+    def from_csv(cls, path: str, config: FinanceDataConfigWithProcessors):
         return cls().__load(path, config)
 
-    def __load(self, path: str, config: FinanceDataConfig):
+    def __load(self, path: str, config: FinanceDataConfigWithProcessors):
         self.__df = pd.read_csv(path)
         self.__df[STANDARD_COLUMNS['SOURCE']] = config.source
 

@@ -1,14 +1,16 @@
 from pydantic import BaseModel
 from finance_data import FinanceDataConfig, CategoryConfig, CombineInOutColumnsConfig, NotesConfig
+import datetime
 
 class OutputConfig(BaseModel):
     path: str
-    month: str
-    year: str
+    start_date: datetime.date
+    end_date: datetime.date | None
 
-class Source(BaseModel):
+class SourceConfig(BaseModel):
+    path: str
+
     finance_data_config: FinanceDataConfig
-
     negate_amount: bool
     combine_in_out_amount_config: CombineInOutColumnsConfig
 
@@ -18,7 +20,7 @@ class Source(BaseModel):
 
 class AppConfig(BaseModel):
     output: OutputConfig
-    sources: list[Source]
+    sources: list[SourceConfig]
     
     notes_config: NotesConfig
     category_config: CategoryConfig

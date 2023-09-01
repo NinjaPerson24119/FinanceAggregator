@@ -2,8 +2,10 @@ import pandas as pd
 import os
 import json
 from config import AppConfig
+from finance_data_builder import build_finance_data_objects
+from finance_data import FinanceData
 
-def load_config() -> AppConfig:
+def load_app_config() -> AppConfig:
     app_dir = os.path.dirname(os.path.realpath(__file__))
     config_path = os.path.join(app_dir, 'config', 'config.json')
     try:
@@ -26,7 +28,14 @@ def load_config() -> AppConfig:
         exit(1)
 
 def main():
-    config = load_config()
+    app_config = load_app_config()
+    finance_data_objects = build_finance_data_objects(app_config)
+
+    combined_finance_data = FinanceData()
+    for finance_data in finance_data_objects:
+        combined_finance_data.combine(finance_data)
+
+    combined_finance_data.to_csv(app_config.output_path)
 
 if __name__ == "__main__":
     main()
