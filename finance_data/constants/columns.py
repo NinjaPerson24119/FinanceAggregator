@@ -1,1 +1,1 @@
-STANDARD_COLUMNS = {"DATE": "date", "NAME": "name", "AMOUNT": "amount"}
+STANDARD_COLUMNS = {"DATE": "date", "NAME": "name", "AMOUNT": "amount", "SOURCE": "source"}
