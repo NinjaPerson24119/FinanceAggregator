@@ -9,6 +9,7 @@ from finance_data import (
     WithCategories,
     WithNotes,
     AddMissingHeader,
+    ConfigurationError,
 )
 from finance_data.preprocessors import CombineInOutColumns
 from config import AppConfig, SourceConfig
@@ -78,8 +79,8 @@ def build_finance_data_objects(app_config: AppConfig) -> list[FinanceData]:
         try:
             finance_data = build_source(app_config, source_config)
             finance_data_objects.append(finance_data)
-        except Exception as e:
+        except ConfigurationError as e:
             print(
-                f"Failed to build source '{source_config.finance_data_config.source}': {repr(e)}. Skipping."
+                f"Configuration error. Failed to build source '{source_config.finance_data_config.source}': {repr(e)}. Skipping."
             )
     return finance_data_objects

@@ -1,4 +1,5 @@
 STANDARD_COLUMNS = {
+    # standardized to Pandas datetime
     "DATE": "date",
     "NAME": "name",
     "AMOUNT": "amount",

@@ -34,7 +34,6 @@ def main():
     finance_data_objects = build_finance_data_objects(app_config)
 
     combined_finance_data = FinanceData()
-    print(finance_data_objects)
     for finance_data in finance_data_objects:
         combined_finance_data.combine(finance_data)
 

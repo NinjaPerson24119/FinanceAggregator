@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from .preprocessors import Preprocessor
 from .postprocessors import Postprocessor
 from dataclasses import dataclass, field
-
+from finance_data.errors import ConfigurationError
 
 class FinanceDataConfig(BaseModel):
     source: str
@@ -50,40 +50,35 @@ class FinanceData:
 
         self.__process()
 
-    def __validate_columns(self):
-        has_all_columns = True
-        for column in self.__std_columns:
-            if not column in self.__df.columns.values:
-                has_all_columns = False
-                break
-        if has_all_columns:
-            return
-
-        # validate column mapping
+    def __validate_column_mapping(self):
         loaded_columns = list(self.__df.columns.values)
         for loaded_column, mapped_to_column in self.__config.column_mapping.items():
             if not loaded_column in loaded_columns:
-                print("Data sample:")
-                print(self.__df.head())
-                raise ValueError(
-                    f"Column validation failed. This may be because column_mapping did not contain '{loaded_column}' as a key."
+                raise ConfigurationError(
+                    f"Cannot map '{loaded_column}' as a key because it is not a column in the source data. Source data has columns: {loaded_columns}"
                 )
             if not mapped_to_column in self.__std_loaded_columns:
-                print("Data sample:")
-                print(self.__df.head())
-                raise ValueError(
-                    f"Column validation failed. This may be because column_mapping did not map to '{mapped_to_column}' as a value."
+                raise ConfigurationError(
+                    f"Cannot map'{mapped_to_column}' as a value because it is not a required standard column. Standard columns to load are: {self.__std_loaded_columns}"
+                )
+
+    def __validate_has_standardized_columns(self):
+        for column in self.__std_columns:
+            if not column in self.__df.columns.values:
+                raise ConfigurationError(
+                    f"Data is missing required column '{column}'. Data has columns: {self.__df.columns.values}"
                 )
 
     def __standardize(self):
-        # rename columns, if they pass or fail, we still want to validate to surface information to the user
-        try:
-            self.__df = self.__df.rename(columns=self.__config.column_mapping)
-        finally:
-            self.__validate_columns()
+        # rename columns
+        self.__validate_column_mapping()
+        self.__df = self.__df.rename(columns=self.__config.column_mapping)
 
         # add source column
         self.__df[STANDARD_COLUMNS["SOURCE"]] = self.__config.source
+        
+        # validate that all standard columns are present
+        self.__validate_has_standardized_columns()
 
         # convert date strings to datetime
         self.__df[STANDARD_COLUMNS["DATE"]] = self.__df[STANDARD_COLUMNS["DATE"]].apply(
