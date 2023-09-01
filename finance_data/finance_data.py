@@ -7,8 +7,8 @@ from datetime import datetime
 from pydantic import BaseModel
 from .preprocessors import Preprocessor
 from .postprocessors import Postprocessor
-from dataclasses import dataclass
-from typing import Optional
+from dataclasses import dataclass, field
+
 
 class FinanceDataConfig(BaseModel):
     source: str
@@ -21,14 +21,8 @@ class FinanceDataConfigWithProcessors:
     source: str
     column_mapping: dict[str, str]
     date_format: str
-    preprocessors: Optional[list[Preprocessor]] = None
-    postprocessors: Optional[list[Postprocessor]] = None
-
-    def __post_init__(self):
-        if self.preprocessors is None:
-            self.preprocessors = []
-        if self.postprocessors is None:
-            self.postprocessors = []
+    preprocessors: list[Preprocessor] = field(default_factory=list)
+    postprocessors: list[Postprocessor] = field(default_factory=list)
 
 
 class FinanceData:
@@ -52,6 +46,8 @@ class FinanceData:
 
         self.__config = config
         for std_column in self.__std_columns_list:
+            if std_column == STANDARD_COLUMNS["SOURCE"]:
+                continue
             assert (
                 std_column in self.__config.column_mapping
             ), f"column_mapping must contain {std_column}"
