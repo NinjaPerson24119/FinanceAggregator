@@ -1,5 +1,8 @@
 from pydantic import BaseModel
-from finance_data import CategoryConfig, CombineInOutAmountConfig, NotesConfig
+from finance_data.finance_data_base import FinanceDataBaseConfig
+from finance_data.categories import CategoryConfig
+from finance_data.combine_in_out_columns import CombineInOutAmountConfig
+from finance_data.notes import NotesConfig
 
 class OutputConfig(BaseModel):
     path: str
@@ -7,9 +10,7 @@ class OutputConfig(BaseModel):
     year: str
 
 class Source(BaseModel):
-    name: str
-    column_mapping: dict[str, str]
-    date_format: str
+    finance_data_config: FinanceDataBaseConfig
 
     negate_amount: bool
     combine_in_out_amount_config: CombineInOutAmountConfig
