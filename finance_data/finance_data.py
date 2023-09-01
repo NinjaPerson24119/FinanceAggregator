@@ -7,7 +7,8 @@ from datetime import datetime
 from pydantic import BaseModel
 from .preprocessors import Preprocessor
 from .postprocessors import Postprocessor
-
+from dataclasses import dataclass
+from typing import Optional
 
 class FinanceDataConfig(BaseModel):
     source: str
@@ -15,12 +16,19 @@ class FinanceDataConfig(BaseModel):
     date_format: str
 
 
+@dataclass
 class FinanceDataConfigWithProcessors:
     source: str
     column_mapping: dict[str, str]
     date_format: str
-    preprocessors: list[Preprocessor] = []
-    postprocessors: list[Postprocessor] = []
+    preprocessors: Optional[list[Preprocessor]] = None
+    postprocessors: Optional[list[Postprocessor]] = None
+
+    def __post_init__(self):
+        if self.preprocessors is None:
+            self.preprocessors = []
+        if self.postprocessors is None:
+            self.postprocessors = []
 
 
 class FinanceData:

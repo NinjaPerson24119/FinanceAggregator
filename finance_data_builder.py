@@ -19,11 +19,11 @@ date_format = "%Y-%m-%d"
 def build_finance_data_objects(app_config: AppConfig) -> list[FinanceData]:
     finance_data_objects = []
     for source_config in app_config.sources:
-        finance_data_config_with_processors: FinanceDataConfigWithProcessors = {
-            source: source_config.finance_data_config.source,
-            column_mapping: source_config.finance_data_config.column_mapping,
-            date_format: source_config.finance_data_config.date_format,
-        }
+        finance_data_config_with_processors = FinanceDataConfigWithProcessors(
+            source=source_config.finance_data_config.source,
+            column_mapping=source_config.finance_data_config.column_mapping,
+            date_format=source_config.finance_data_config.date_format,
+        )
 
         start_date = datetime.strptime(app_config.output.start_date, date_format).date()
         end_date = None
