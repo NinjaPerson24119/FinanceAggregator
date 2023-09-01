@@ -16,50 +16,50 @@ class FinanceDataConfig(BaseModel):
     postprocessors: list[Postprocessor] = []
 
 class FinanceData:
-    std_columns_list = [STANDARD_COLUMNS['DATE'], STANDARD_COLUMNS['NAME'], STANDARD_COLUMNS['AMOUNT'], STANDARD_COLUMNS['SOURCE']]
+    __std_columns_list = [STANDARD_COLUMNS['DATE'], STANDARD_COLUMNS['NAME'], STANDARD_COLUMNS['AMOUNT'], STANDARD_COLUMNS['SOURCE']]
 
     def __init__(self):
-        self.df = pd.DataFrame(columns=self.std_columns_list)
+        self.__df = pd.DataFrame(columns=self.__std_columns_list)
 
     @classmethod
     def from_csv(cls, path: str, config: FinanceDataConfig):
-        return cls().load(path, config)
+        return cls().__load(path, config)
 
-    def load(self, path: str, config: FinanceDataConfig):
-        self.df = pd.read_csv(path)
-        self.df[STANDARD_COLUMNS['SOURCE']] = config.source
+    def __load(self, path: str, config: FinanceDataConfig):
+        self.__df = pd.read_csv(path)
+        self.__df[STANDARD_COLUMNS['SOURCE']] = config.source
 
-        self.config = config
-        for std_column in self.std_columns_list:
-            assert std_column in self.config.column_mapping, f"column_mapping must contain {std_column}"
+        self.__config = config
+        for std_column in self.__std_columns_list:
+            assert std_column in self.__config.column_mapping, f"column_mapping must contain {std_column}"
 
-        self.process()
+        self.__process()
 
-    def standardize(self):
+    def __standardize(self):
         # convert date strings to datetime
-        self.df[STANDARD_COLUMNS['DATE']] = self.df[STANDARD_COLUMNS['DATE']].astype(str)
-        self.df.apply(lambda row: datetime.strptime(row[STANDARD_COLUMNS['DATE']], self.config.date_format), axis=1)
+        self.__df[STANDARD_COLUMNS['DATE']] = self.__df[STANDARD_COLUMNS['DATE']].astype(str)
+        self.__df.apply(lambda row: datetime.strptime(row[STANDARD_COLUMNS['DATE']], self.__config.date_format), axis=1)
 
         # rename columns
-        self.df = self.df.rename(columns=self.config.column_mapping)
+        self.__df = self.__df.rename(columns=self.__config.column_mapping)
 
         # remove trailing whitespace
-        self.df[STANDARD_COLUMNS['NAME']] = self.df.apply(lambda row: row[STANDARD_COLUMNS['NAME']].strip(), axis=1)
+        self.__df[STANDARD_COLUMNS['NAME']] = self.__df.apply(lambda row: row[STANDARD_COLUMNS['NAME']].strip(), axis=1)
 
-    def process(self):
-        for preprocessor in self.config.preprocessors:
-            self.df = preprocessor.preprocess(self.df)
-        self.standardize()
-        for postprocessor in self.config.postprocessors:
-            self.df = postprocessor.postprocess(self.df)
+    def __process(self):
+        for preprocessor in self.__config.preprocessors:
+            self.__df = preprocessor.preprocess(self.__df)
+        self.__standardize()
+        for postprocessor in self.__config.postprocessors:
+            self.__df = postprocessor.postprocess(self.__df)
 
     def combine(self, other: FinanceData):
-        assert self.df != None and other.df != None, "Both data sets must be initialized"
+        assert self.__df != None and other.df != None, "Both data sets must be initialized"
 
-        self.df = pd.concat([self.df, other.df], ignore_index=True)
-        self.df = self.df.sort_values(by=STANDARD_COLUMNS['DATE'])
+        self.__df = pd.concat([self.__df, other.df], ignore_index=True)
+        self.__df = self.__df.sort_values(by=STANDARD_COLUMNS['DATE'])
 
     def to_csv(self, path: str):
-        self.df.to_csv(path, index=False)
+        self.__df.to_csv(path, index=False)
 
     
