@@ -80,10 +80,10 @@ class FinanceData:
         # validate that all standard columns are present
         self.__validate_has_standardized_columns()
 
-        # convert date strings to datetime
+        # convert date cells to datetime
         self.__df[STANDARD_COLUMNS["DATE"]] = self.__df[STANDARD_COLUMNS["DATE"]].apply(
-            lambda date_str: pd.to_datetime(datetime.strptime(
-                date_str, self.__config.date_format
+            lambda date: pd.to_datetime(datetime.strptime(
+                str(date), self.__config.date_format
             ))
         )
 
