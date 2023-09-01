@@ -1,3 +1,3 @@
 # Finance Aggregator
 
-Accepts CSVs from various financial sources and aggregates them into a single CSV.
+Aggregates financial CSVs from multiple sources into a single transaction record
