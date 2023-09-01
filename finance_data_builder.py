@@ -8,6 +8,7 @@ from finance_data import (
     NegateAmount,
     WithCategories,
     WithNotes,
+    AddMissingHeader,
 )
 from finance_data.preprocessors import CombineInOutColumns
 from config import AppConfig, SourceConfig
@@ -30,17 +31,25 @@ def build_source(app_config: AppConfig, source_config: SourceConfig) -> FinanceD
         FilterByDate(start_date, end_date)
     )
 
-    if source_config.negate_amount:
-        finance_data_config_with_processors.postprocessors.append(NegateAmount())
+    # source specific pre-processors
+    if source_config.add_missing_header:
+        finance_data_config_with_processors.preprocessors.append(
+            AddMissingHeader(source_config.add_missing_header)
+        )
     if source_config.combine_in_out_amount_config:
         finance_data_config_with_processors.preprocessors.append(
             CombineInOutColumns(source_config.combine_in_out_amount_config)
         )
+    
+    # source specific post-processors
+    if source_config.negate_amount:
+        finance_data_config_with_processors.postprocessors.append(NegateAmount())
     if source_config.filter_names_with_substrings:
         finance_data_config_with_processors.postprocessors.append(
             FilterByName(source_config.filter_names_with_substrings)
         )
 
+    # global post-processors
     if app_config.filter_names_with_substrings:
         finance_data_config_with_processors.postprocessors.append(
             FilterByName(app_config.filter_names_with_substrings)

@@ -18,6 +18,7 @@ class SourceConfig(BaseModel):
     path: str
 
     finance_data_config: FinanceDataConfig
+    add_missing_header: Optional[list[str]] = None
     negate_amount: Optional[bool] = None
     combine_in_out_amount_config: Optional[CombineInOutColumnsConfig] = None
 
