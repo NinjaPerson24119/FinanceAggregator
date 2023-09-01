@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from finance_data.finance_data_base import FinanceDataBaseConfig
+from finance_data.finance_data import FinanceDataBaseConfig
 from finance_data.categories import CategoryConfig
 from finance_data.combine_in_out_columns import CombineInOutAmountConfig
 from finance_data.notes import NotesConfig

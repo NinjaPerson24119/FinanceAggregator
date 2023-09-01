@@ -1,8 +1,8 @@
-from finance_data_base import FinanceDataBase
-from constants import STANDARD_COLUMNS
+from finance_data.finance_data import FinanceData
+from finance_data import STANDARD_COLUMNS
 
-class FinanceDataFilterByName(FinanceDataBase):
-    def __init__(self, finance_data: FinanceDataBase, name_substrings_to_filter: list[str]):
+class FinanceDataFilterByName(FinanceData):
+    def __init__(self, finance_data: FinanceData, name_substrings_to_filter: list[str]):
         self.finance_data = finance_data
         self.name_substrings_to_filter = name_substrings_to_filter
 

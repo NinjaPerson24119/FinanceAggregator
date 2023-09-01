@@ -1,8 +1,8 @@
-from finance_data_base import FinanceDataBase
-from constants import STANDARD_COLUMNS
+from finance_data.finance_data import FinanceData
+from finance_data import STANDARD_COLUMNS
 
-class FinanceDataNegateAmount(FinanceDataBase):
-    def __init__(self, finance_data: FinanceDataBase):
+class FinanceDataNegateAmount(FinanceData):
+    def __init__(self, finance_data: FinanceData):
         self.finance_data = finance_data
 
     def negate_amount(self):

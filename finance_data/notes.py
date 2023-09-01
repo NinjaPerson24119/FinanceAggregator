@@ -1,15 +1,15 @@
-from finance_data_base import FinanceDataBase
-from constants import STANDARD_COLUMNS
+from finance_data.finance_data import FinanceData
+from finance_data import STANDARD_COLUMNS
 from pydantic import BaseModel
 import pandas as pd
 
 class NotesConfig(BaseModel):
     note: dict[str, list[str]]
 
-class FinanceDataWithNotes(FinanceDataBase):
+class FinanceDataWithNotes(FinanceData):
     NOTES_COLUMN = 'notes'
 
-    def __init__(self, finance_data: FinanceDataBase, notes_config: NotesConfig):
+    def __init__(self, finance_data: FinanceData, notes_config: NotesConfig):
         self.finance_data = finance_data
         self.notes_config = notes_config
 

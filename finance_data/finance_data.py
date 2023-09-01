@@ -1,15 +1,17 @@
 from __future__ import annotations
 import pandas as pd
-from constants import STANDARD_COLUMNS
+from finance_data import STANDARD_COLUMNS
 from datetime import datetime
 from pydantic import BaseModel
+
+STANDARD_COLUMNS = {"DATE": "date", "NAME": "name", "AMOUNT": "amount"}
 
 class FinanceDataBaseConfig(BaseModel):
     source: str
     column_mapping: dict[str, str]
     date_format: str
 
-class FinanceDataBase:
+class FinanceData:
     std_columns_list = [STANDARD_COLUMNS['DATE'], STANDARD_COLUMNS['NAME'], STANDARD_COLUMNS['AMOUNT'], STANDARD_COLUMNS['SOURCE']]
 
     def __init__(self):
@@ -51,7 +53,7 @@ class FinanceDataBase:
         self.standardize()
         self.postprocess()
 
-    def combine(self, other: FinanceDataBase):
+    def combine(self, other: FinanceData):
         assert self.df != None and other.df != None, "Both data sets must be initialized"
 
         self.df = pd.concat([self.df, other.df], ignore_index=True)

@@ -1,5 +1,5 @@
-from finance_data_base import FinanceDataBase
-from constants import STANDARD_COLUMNS
+from finance_data.finance_data import FinanceData
+from finance_data import STANDARD_COLUMNS
 from pydantic import BaseModel
 
 class CombineInOutColumnsConfig(BaseModel):
@@ -7,8 +7,8 @@ class CombineInOutColumnsConfig(BaseModel):
     out_column: str
     combined_column: str
 
-class FinanceDataCombineInOutColumns(FinanceDataBase):
-    def __init__(self, finance_data: FinanceDataBase, in_out_amount_config: CombineInOutColumnsConfig):
+class FinanceDataCombineInOutColumns(FinanceData):
+    def __init__(self, finance_data: FinanceData, in_out_amount_config: CombineInOutColumnsConfig):
         self.finance_data = finance_data
         self.in_out_amount_config = in_out_amount_config
 

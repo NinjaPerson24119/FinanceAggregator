@@ -1,10 +1,10 @@
 import calendar
 import pandas as pd
-from finance_data_base import FinanceDataBase
-from constants import STANDARD_COLUMNS
+from finance_data.finance_data import FinanceData
+from finance_data import STANDARD_COLUMNS
 import datetime
 
-class FinanceDataFilterByDate(FinanceDataBase): 
+class FinanceDataFilterByDate(FinanceData): 
     def __init__(self, finance_data, start: datetime.datetime, end: datetime.datetime = None):
         self.finance_data = finance_data
         self.start = start
