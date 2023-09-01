@@ -1,8 +1,12 @@
+# required for FinanceData methods to annotate type as itself
 from __future__ import annotations
+
 import pandas as pd
 from finance_data import STANDARD_COLUMNS
 from datetime import datetime
 from pydantic import BaseModel
+from preprocessors import Preprocessor
+from postprocessors import Postprocessor
 
 STANDARD_COLUMNS = {"DATE": "date", "NAME": "name", "AMOUNT": "amount"}
 
@@ -10,6 +14,8 @@ class FinanceDataConfig(BaseModel):
     source: str
     column_mapping: dict[str, str]
     date_format: str
+    preprocessors: list[Preprocessor] = []
+    postprocessors: list[Postprocessor] = []
 
 class FinanceData:
     std_columns_list = [STANDARD_COLUMNS['DATE'], STANDARD_COLUMNS['NAME'], STANDARD_COLUMNS['AMOUNT'], STANDARD_COLUMNS['SOURCE']]
@@ -31,12 +37,6 @@ class FinanceData:
 
         self.process()
 
-    def preprocess(self):
-        pass
-
-    def postprocess(self):
-        pass
-
     def standardize(self):
         # convert date strings to datetime
         self.df[STANDARD_COLUMNS['DATE']] = self.df[STANDARD_COLUMNS['DATE']].astype(str)
@@ -49,9 +49,11 @@ class FinanceData:
         self.df[STANDARD_COLUMNS['NAME']] = self.df.apply(lambda row: row[STANDARD_COLUMNS['NAME']].strip(), axis=1)
 
     def process(self):
-        self.preprocess()
+        for preprocessor in self.config.preprocessors:
+            self.df = preprocessor.preprocess(self.df)
         self.standardize()
-        self.postprocess()
+        for postprocessor in self.config.postprocessors:
+            self.df = postprocessor.postprocess(self.df)
 
     def combine(self, other: FinanceData):
         assert self.df != None and other.df != None, "Both data sets must be initialized"

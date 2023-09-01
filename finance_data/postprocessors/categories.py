@@ -1,4 +1,3 @@
-from finance_data.finance_data import FinanceData
 from finance_data import STANDARD_COLUMNS
 from pydantic import BaseModel
 import pandas as pd
@@ -11,7 +10,7 @@ class CategoryConfig(BaseModel):
     # substrings to match in name
     substrings: list[str]
 
-class FinanceDataWithCategories(Postprocessor):
+class WithCategories(Postprocessor):
     def __init__(self, categories: list[CategoryConfig]):
         self.categories = categories
 
