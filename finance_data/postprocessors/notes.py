@@ -1,13 +1,9 @@
 from finance_data.constants import STANDARD_COLUMNS
-from pydantic import BaseModel
 import pandas as pd
 from .postprocessor import Postprocessor
 
 NOTES_COLUMN = "notes"
-
-
-class NotesConfig(BaseModel):
-    note: dict[str, list[str]]
+NotesConfig = dict[str, list[str]]
 
 
 class WithNotes(Postprocessor):
@@ -23,8 +19,10 @@ class WithNotes(Postprocessor):
         return notes
 
     def add_and_prefill_notes(self, df: pd.DataFrame) -> pd.DataFrame:
+        if df.empty:
+            return df
         copy = df.copy()
-        copy[NOTES_COLUMN] = df.apply(
+        copy[NOTES_COLUMN] = copy.apply(
             lambda row: self.generate_notes_for_row(row), axis=1
         )
         return copy

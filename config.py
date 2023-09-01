@@ -30,8 +30,8 @@ class AppConfig(BaseModel):
     output: OutputConfig
     sources: list[SourceConfig]
 
-    notes_config: Optional[NotesConfig] = None
-    category_config: Optional[CategoriesConfig] = None
+    notes: Optional[NotesConfig] = None
+    categories: Optional[CategoriesConfig] = None
 
     # global filters
     filter_names_with_substrings: Optional[list[str]] = None

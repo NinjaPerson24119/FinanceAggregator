@@ -56,15 +56,15 @@ def build_source(app_config: AppConfig, source_config: SourceConfig) -> FinanceD
         finance_data_config_with_processors.postprocessors.append(
             FilterByName(app_config.filter_names_with_substrings)
         )
-    if app_config.category_config:
+    if app_config.categories:
         finance_data_config_with_processors.postprocessors.append(
-            WithCategories(app_config.category_config)
+            WithCategories(app_config.categories)
         )
-    if app_config.notes_config:
+    if app_config.notes:
         finance_data_config_with_processors.postprocessors.append(
-            WithNotes(app_config.notes_config)
+            WithNotes(app_config.notes)
         )
-
+        
     finance_data = FinanceData.from_csv(
         source_config.path,
         finance_data_config_with_processors,

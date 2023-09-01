@@ -107,6 +107,8 @@ class FinanceData:
             print(f"\tPostprocessing with {postprocessor.__class__.__name__}...")
             self.__df = postprocessor.postprocess(self.__df)
 
+        print("\n")
+
     def combine(self, other: FinanceData):
         if other.__df.empty:
             return

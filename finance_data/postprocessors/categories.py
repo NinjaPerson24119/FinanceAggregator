@@ -1,13 +1,9 @@
 from finance_data.constants import STANDARD_COLUMNS
-from pydantic import BaseModel
 import pandas as pd
 from .postprocessor import Postprocessor
 
 CATEGORY_COLUMN = "category"
-
-
-class CategoriesConfig(BaseModel):
-    categories: dict[str, list[str]]
+CategoriesConfig = dict[str, list[str]]
 
 
 class WithCategories(Postprocessor):
@@ -22,18 +18,24 @@ class WithCategories(Postprocessor):
         return ""
 
     def categorize(self, df: pd.DataFrame) -> pd.DataFrame:
-        return df.apply(lambda row: self.category_from_row(row), axis=1)
+        if df.empty:
+            return df
+        copy = df.copy()
+        copy[CATEGORY_COLUMN] = copy.apply(lambda row: self.category_from_row(row), axis=1)
+        return copy
 
     def print_uncategorized_names(self, df: pd.DataFrame):
         uncategorized_names = df[df[CATEGORY_COLUMN] == ""][
             STANDARD_COLUMNS["NAME"]
         ].unique()
         if len(uncategorized_names):
-            print(f"\n{len(uncategorized_names)} Uncategorized Names...\n")
+            print(f"\t{len(uncategorized_names)} Uncategorized Names...\n")
             for name in uncategorized_names:
-                print(name)
+                print(f'\t{name}')
+        print("\n")
 
     def postprocess(self, df: pd.DataFrame) -> pd.DataFrame:
         result = self.categorize(df)
-        self.print_uncategorized_names(df)
+        if not df.empty:
+            self.print_uncategorized_names(result)
         return result
