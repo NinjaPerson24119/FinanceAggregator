@@ -1,12 +1,11 @@
 from pydantic import BaseModel
 from finance_data import FinanceDataConfig, CategoriesConfig, CombineInOutColumnsConfig, NotesConfig
-import datetime
 from typing import Optional
 
 class OutputConfig(BaseModel):
     path: str
-    start_date: datetime.date
-    end_date: Optional[datetime.date] = None
+    start_date: str
+    end_date: Optional[str] = None
 
 class SourceConfig(BaseModel):
     path: str
