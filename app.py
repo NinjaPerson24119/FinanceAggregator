@@ -37,7 +37,7 @@ def main():
     for finance_data in finance_data_objects:
         combined_finance_data.combine(finance_data)
 
-    combined_finance_data.to_csv(app_config.output_path)
+    combined_finance_data.to_csv(app_config.output.path)
 
 
 if __name__ == "__main__":

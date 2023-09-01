@@ -26,31 +26,44 @@ class FinanceDataConfigWithProcessors:
 
 
 class FinanceData:
-    __std_columns_list = [
+    __std_columns = [
         STANDARD_COLUMNS["DATE"],
         STANDARD_COLUMNS["NAME"],
         STANDARD_COLUMNS["AMOUNT"],
         STANDARD_COLUMNS["SOURCE"],
     ]
+    __std_loaded_columns = [
+        x for x in __std_columns if x != STANDARD_COLUMNS["SOURCE"]
+    ]
 
     def __init__(self):
-        self.__df = pd.DataFrame(columns=self.__std_columns_list)
+        self.__df = pd.DataFrame(columns=self.__std_columns)
 
     @classmethod
     def from_csv(cls, path: str, config: FinanceDataConfigWithProcessors):
         return cls().__load(path, config)
 
     def __load(self, path: str, config: FinanceDataConfigWithProcessors):
-        self.__df = pd.read_csv(path)
-        self.__df[STANDARD_COLUMNS["SOURCE"]] = config.source
-
         self.__config = config
-        for std_column in self.__std_columns_list:
-            if std_column == STANDARD_COLUMNS["SOURCE"]:
-                continue
-            assert (
-                std_column in self.__config.column_mapping
-            ), f"column_mapping must contain {std_column}"
+        self.__df = pd.read_csv(path)
+
+        # validate column mapping
+        loaded_columns = list(self.__df.columns.values)
+        for loaded_column, mapped_to_column in self.config.column_mapping.items():
+            if not loaded_column in loaded_columns:
+                raise ValueError(
+                    f"column_mapping must contain {loaded_column} as a key"
+                )
+            if not mapped_to_column in self.__std_loaded_columns:
+                raise ValueError(
+                    f"column_mapping must map to {mapped_to_column} as a value"
+                )
+
+        self.__df[STANDARD_COLUMNS["SOURCE"]] = self.config.source
+
+        # DEBUG
+        print(self.config.source)
+        print(self.__df.head())
 
         self.__process()
 
@@ -75,8 +88,10 @@ class FinanceData:
         )
 
     def __process(self):
+        # preprocessors cannot expect the standard columns to be present
         for preprocessor in self.__config.preprocessors:
             self.__df = preprocessor.preprocess(self.__df)
+
         self.__standardize()
         for postprocessor in self.__config.postprocessors:
             self.__df = postprocessor.postprocess(self.__df)
@@ -90,4 +105,7 @@ class FinanceData:
         self.__df = self.__df.sort_values(by=STANDARD_COLUMNS["DATE"])
 
     def to_csv(self, path: str):
+        if self.__df.shape[0] == 0:
+            print("No data to save. Skipping write to CSV.")
+            return
         self.__df.to_csv(path, index=False)
