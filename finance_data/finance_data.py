@@ -2,13 +2,11 @@
 from __future__ import annotations
 
 import pandas as pd
-from finance_data import STANDARD_COLUMNS
+from finance_data.constants import STANDARD_COLUMNS
 from datetime import datetime
 from pydantic import BaseModel
 from preprocessors import Preprocessor
 from postprocessors import Postprocessor
-
-STANDARD_COLUMNS = {"DATE": "date", "NAME": "name", "AMOUNT": "amount"}
 
 class FinanceDataConfig(BaseModel):
     source: str

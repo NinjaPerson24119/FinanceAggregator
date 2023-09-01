@@ -1,4 +1,4 @@
-from finance_data import STANDARD_COLUMNS
+from finance_data.constants import STANDARD_COLUMNS
 from pydantic import BaseModel
 import pandas as pd
 from postprocessor import Postprocessor
