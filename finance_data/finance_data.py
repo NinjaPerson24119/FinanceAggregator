@@ -39,7 +39,9 @@ class FinanceData:
 
     @classmethod
     def from_csv(cls, path: str, config: FinanceDataConfigWithProcessors):
-        return cls().__load(path, config)
+        instance = cls()
+        instance.__load(path, config)
+        return instance
 
     def __load(self, path: str, config: FinanceDataConfigWithProcessors):
         self.__config = config
@@ -60,11 +62,13 @@ class FinanceData:
         loaded_columns = list(self.__df.columns.values)
         for loaded_column, mapped_to_column in self.__config.column_mapping.items():
             if not loaded_column in loaded_columns:
+                print("Data sample:")
                 print(self.__df.head())
                 raise ValueError(
                     f"Column validation failed. This may be because column_mapping did not contain '{loaded_column}' as a key."
                 )
             if not mapped_to_column in self.__std_loaded_columns:
+                print("Data sample:")
                 print(self.__df.head())
                 raise ValueError(
                     f"Column validation failed. This may be because column_mapping did not map to '{mapped_to_column}' as a value."
@@ -106,11 +110,10 @@ class FinanceData:
             self.__df = postprocessor.postprocess(self.__df)
 
     def combine(self, other: FinanceData):
-        assert (
-            self.__df != None and other.df != None
-        ), "Both data sets must be initialized"
+        if other.__df.empty():
+            return
 
-        self.__df = pd.concat([self.__df, other.df], ignore_index=True)
+        self.__df = pd.concat([self.__df, other.__df], ignore_index=True)
         self.__df = self.__df.sort_values(by=STANDARD_COLUMNS["DATE"])
 
     def to_csv(self, path: str):
