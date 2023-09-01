@@ -32,9 +32,7 @@ class FinanceData:
         STANDARD_COLUMNS["AMOUNT"],
         STANDARD_COLUMNS["SOURCE"],
     ]
-    __std_loaded_columns = [
-        x for x in __std_columns if x != STANDARD_COLUMNS["SOURCE"]
-    ]
+    __std_loaded_columns = [x for x in __std_columns if x != STANDARD_COLUMNS["SOURCE"]]
 
     def __init__(self):
         self.__df = pd.DataFrame(columns=self.__std_columns)
@@ -47,40 +45,48 @@ class FinanceData:
         self.__config = config
         self.__df = pd.read_csv(path)
 
-        # validate column mapping
-        loaded_columns = list(self.__df.columns.values)
-        for loaded_column, mapped_to_column in self.config.column_mapping.items():
-            if not loaded_column in loaded_columns:
-                raise ValueError(
-                    f"column_mapping must contain {loaded_column} as a key"
-                )
-            if not mapped_to_column in self.__std_loaded_columns:
-                raise ValueError(
-                    f"column_mapping must map to {mapped_to_column} as a value"
-                )
-
-        self.__df[STANDARD_COLUMNS["SOURCE"]] = self.config.source
-
-        # DEBUG
-        print(self.config.source)
-        print(self.__df.head())
-
         self.__process()
 
-    def __standardize(self):
-        # convert date strings to datetime
-        self.__df[STANDARD_COLUMNS["DATE"]] = self.__df[
-            STANDARD_COLUMNS["DATE"]
-        ].astype(str)
-        self.__df.apply(
-            lambda row: datetime.strptime(
-                row[STANDARD_COLUMNS["DATE"]], self.__config.date_format
-            ),
-            axis=1,
-        )
+    def __validate_columns(self):
+        has_all_columns = True
+        for column in self.__std_columns:
+            if not column in self.__df.columns.values:
+                has_all_columns = False
+                break
+        if has_all_columns:
+            return
 
-        # rename columns
-        self.__df = self.__df.rename(columns=self.__config.column_mapping)
+        # validate column mapping
+        loaded_columns = list(self.__df.columns.values)
+        for loaded_column, mapped_to_column in self.__config.column_mapping.items():
+            if not loaded_column in loaded_columns:
+                print(self.__df.head())
+                raise ValueError(
+                    f"Column validation failed. This may be because column_mapping did not contain '{loaded_column}' as a key."
+                )
+            if not mapped_to_column in self.__std_loaded_columns:
+                print(self.__df.head())
+                raise ValueError(
+                    f"Column validation failed. This may be because column_mapping did not map to '{mapped_to_column}' as a value."
+                )
+
+    def __standardize(self):
+        # rename columns, if they pass or fail, we still want to validate to surface information to the user
+        try:
+            self.__df = self.__df.rename(columns=self.__config.column_mapping)
+        finally:
+            self.__validate_columns()
+
+        # add source column
+        self.__df[STANDARD_COLUMNS["SOURCE"]] = self.__config.source
+
+        # convert date strings to datetime
+        self.__df[STANDARD_COLUMNS["DATE"]] = self.__df[STANDARD_COLUMNS["DATE"]].apply(
+            lambda date_str: pd.to_datetime(datetime.strptime(
+                date_str, self.__config.date_format
+            ))
+        )
+        print(self.__df.head())
 
         # remove trailing whitespace
         self.__df[STANDARD_COLUMNS["NAME"]] = self.__df.apply(
@@ -90,10 +96,13 @@ class FinanceData:
     def __process(self):
         # preprocessors cannot expect the standard columns to be present
         for preprocessor in self.__config.preprocessors:
+            print(f"Preprocessing with {preprocessor.__class__.__name__}...")
             self.__df = preprocessor.preprocess(self.__df)
 
         self.__standardize()
+
         for postprocessor in self.__config.postprocessors:
+            print(f"Postprocessing with {postprocessor.__class__.__name__}...")
             self.__df = postprocessor.postprocess(self.__df)
 
     def combine(self, other: FinanceData):

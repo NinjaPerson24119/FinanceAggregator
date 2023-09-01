@@ -16,12 +16,13 @@ from datetime import datetime
 
 date_format = "%Y-%m-%d"
 
+
 def build_source(app_config: AppConfig, source_config: SourceConfig) -> FinanceData:
     finance_data_config_with_processors = FinanceDataConfigWithProcessors(
-            source=source_config.finance_data_config.source,
-            column_mapping=source_config.finance_data_config.column_mapping,
-            date_format=source_config.finance_data_config.date_format,
-        )
+        source=source_config.finance_data_config.source,
+        column_mapping=source_config.finance_data_config.column_mapping,
+        date_format=source_config.finance_data_config.date_format,
+    )
 
     start_date = datetime.strptime(app_config.output.start_date, date_format).date()
     end_date = None
@@ -40,7 +41,7 @@ def build_source(app_config: AppConfig, source_config: SourceConfig) -> FinanceD
         finance_data_config_with_processors.preprocessors.append(
             CombineInOutColumns(source_config.combine_in_out_amount_config)
         )
-    
+
     # source specific post-processors
     if source_config.negate_amount:
         finance_data_config_with_processors.postprocessors.append(NegateAmount())
@@ -70,6 +71,7 @@ def build_source(app_config: AppConfig, source_config: SourceConfig) -> FinanceD
 
     return finance_data
 
+
 def build_finance_data_objects(app_config: AppConfig) -> list[FinanceData]:
     finance_data_objects = []
     for source_config in app_config.sources:
@@ -77,5 +79,7 @@ def build_finance_data_objects(app_config: AppConfig) -> list[FinanceData]:
             finance_data = build_source(app_config, source_config)
             finance_data_objects.append(finance_data)
         except Exception as e:
-            print(f"Failed to build source {source_config.path}: {e}. Skipping.")
+            print(
+                f"Failed to build source '{source_config.finance_data_config.source}': {repr(e)}. Skipping."
+            )
     return finance_data_objects

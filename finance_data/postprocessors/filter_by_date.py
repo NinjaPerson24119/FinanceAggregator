@@ -17,8 +17,8 @@ class FilterByDate(Postprocessor):
 
     def filter_by_date(self, df: pd.DataFrame) -> pd.DataFrame:
         return df[
-            (df[STANDARD_COLUMNS["DATE"]] >= self.start)
-            & (df[STANDARD_COLUMNS["DATE"]] <= self.end)
+            (df[STANDARD_COLUMNS["DATE"]] >= pd.to_datetime(self.start))
+            & (df[STANDARD_COLUMNS["DATE"]] <= pd.to_datetime(self.end))
         ]
 
     def postprocess(self, df: pd.DataFrame) -> pd.DataFrame:
