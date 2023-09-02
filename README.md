@@ -33,7 +33,18 @@ Loading Some Bank...
 Saved to /.../output.csv
 ```
 
-### Example Output CSV
+### Example CSV
+
+Input
+```
+01-Jan-2023,AMAZON,,50
+02-Jan-2023,UBERTRIP,,15
+04-Jan-2023,IKEA,,269.72
+20-Jan-2023,INTERAC e-Transfer From Human,200,
+07-Feb-2023,spotify,,11.59
+```
+
+Output
 ```
 date,name,amount,source,category,notes
 2023-01-01,AMAZON,-50.0,Some Bank,amazon,What did you buy? Pick a better category. 
