@@ -21,7 +21,9 @@ class WithCategories(Postprocessor):
         if df.empty:
             return df
         copy = df.copy()
-        copy[CATEGORY_COLUMN] = copy.apply(lambda row: self.category_from_row(row), axis=1)
+        copy[CATEGORY_COLUMN] = copy.apply(
+            lambda row: self.category_from_row(row), axis=1
+        )
         return copy
 
     def print_uncategorized_names(self, df: pd.DataFrame):
@@ -31,7 +33,7 @@ class WithCategories(Postprocessor):
         if len(uncategorized_names):
             print(f"\t{len(uncategorized_names)} Uncategorized Names...\n")
             for name in uncategorized_names:
-                print(f'\t{name}')
+                print(f"\t{name}")
         print("\n")
 
     def postprocess(self, df: pd.DataFrame) -> pd.DataFrame:

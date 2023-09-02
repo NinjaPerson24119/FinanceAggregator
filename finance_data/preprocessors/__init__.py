@@ -1,3 +1,2 @@
 from .combine_in_out_columns import CombineInOutColumnsConfig, CombineInOutColumns
-from .add_missing_header import AddMissingHeader
 from .preprocessor import Preprocessor

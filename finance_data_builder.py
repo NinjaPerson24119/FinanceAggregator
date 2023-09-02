@@ -8,7 +8,6 @@ from finance_data import (
     NegateAmount,
     WithCategories,
     WithNotes,
-    AddMissingHeader,
     ConfigurationError,
 )
 from finance_data.preprocessors import CombineInOutColumns
@@ -23,6 +22,7 @@ def build_source(app_config: AppConfig, source_config: SourceConfig) -> FinanceD
         source=source_config.finance_data_config.source,
         column_mapping=source_config.finance_data_config.column_mapping,
         date_format=source_config.finance_data_config.date_format,
+        add_missing_header=source_config.finance_data_config.add_missing_header,
     )
 
     start_date = datetime.strptime(app_config.output.start_date, date_format).date()
@@ -34,10 +34,6 @@ def build_source(app_config: AppConfig, source_config: SourceConfig) -> FinanceD
     )
 
     # source specific pre-processors
-    if source_config.add_missing_header:
-        finance_data_config_with_processors.preprocessors.append(
-            AddMissingHeader(source_config.add_missing_header)
-        )
     if source_config.combine_in_out_amount_config:
         finance_data_config_with_processors.preprocessors.append(
             CombineInOutColumns(source_config.combine_in_out_amount_config)
@@ -64,7 +60,7 @@ def build_source(app_config: AppConfig, source_config: SourceConfig) -> FinanceD
         finance_data_config_with_processors.postprocessors.append(
             WithNotes(app_config.notes)
         )
-        
+
     finance_data = FinanceData.from_csv(
         source_config.path,
         finance_data_config_with_processors,

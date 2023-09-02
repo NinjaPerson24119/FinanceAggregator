@@ -1,11 +1,11 @@
 {
     "output": {
-        "path": "aggregated_finances.csv",
+        "path": "output.csv",
         "start_date": "2023-01-01"
     },
     "sources": [
         {
-            "path": "some_bank.csv",
+            "path": "config_example/example.csv",
             "finance_data_config": {
                 "source": "Some Bank",
                 "date_format": "%d-%b-%Y",
@@ -13,17 +13,17 @@
                     "Description": "name",
                     "Date": "date",
                     "amount": "amount"
-                }
+                },
+                "add_missing_header": [
+                    "Date",
+                    "Description",
+                    "AmountReceived",
+                    "AmountPaid"
+                ]
             },
-            "add_missing_header": [
-                "date",
-                "name",
-                "amount_received",
-                "amount_paid"
-            ],
             "combine_in_out_amount_config": {
-                "in_column": "amount_received",
-                "out_column": "amount_paid"
+                "in_column": "AmountReceived",
+                "out_column": "AmountPaid"
             },
             "filter_names_with_substrings": [
                 "Online Bill Payment"

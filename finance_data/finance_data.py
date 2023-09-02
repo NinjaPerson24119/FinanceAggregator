@@ -9,11 +9,14 @@ from .preprocessors import Preprocessor
 from .postprocessors import Postprocessor
 from dataclasses import dataclass, field
 from finance_data.errors import ConfigurationError
+from typing import Optional
+
 
 class FinanceDataConfig(BaseModel):
     source: str
     column_mapping: dict[str, str]
     date_format: str
+    add_missing_header: Optional[list[str]]
 
 
 @dataclass
@@ -21,6 +24,7 @@ class FinanceDataConfigWithProcessors:
     source: str
     column_mapping: dict[str, str]
     date_format: str
+    add_missing_header: Optional[list[str]] = None
     preprocessors: list[Preprocessor] = field(default_factory=list)
     postprocessors: list[Postprocessor] = field(default_factory=list)
 
@@ -46,7 +50,12 @@ class FinanceData:
     def __load(self, path: str, config: FinanceDataConfigWithProcessors):
         print(f"Loading {config.source}...")
         self.__config = config
-        self.__df = pd.read_csv(path)
+        if self.__config.add_missing_header is not None:
+            self.__df = pd.read_csv(
+                path, header=None, names=self.__config.add_missing_header
+            )
+        else:
+            self.__df = pd.read_csv(path)
 
         self.__process()
 
@@ -76,7 +85,7 @@ class FinanceData:
 
         # add source column
         self.__df[STANDARD_COLUMNS["SOURCE"]] = self.__config.source
-        
+
         # validate that all standard columns are present
         self.__validate_has_standardized_columns()
 
@@ -85,9 +94,9 @@ class FinanceData:
 
         # convert date cells to datetime
         self.__df[STANDARD_COLUMNS["DATE"]] = self.__df[STANDARD_COLUMNS["DATE"]].apply(
-            lambda date: pd.to_datetime(datetime.strptime(
-                str(date), self.__config.date_format
-            ))
+            lambda date: pd.to_datetime(
+                datetime.strptime(str(date), self.__config.date_format)
+            )
         )
 
         # remove trailing whitespace
