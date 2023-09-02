@@ -1,2 +1,5 @@
-from .combine_in_out_columns import CombineInOutColumnsConfig, CombineInOutColumns
-from .preprocessor import Preprocessor
+from finance_data.preprocessors.combine_in_out_columns import (
+    CombineInOutColumnsConfig,
+    CombineInOutColumns,
+)
+from finance_data.preprocessors.preprocessor import Preprocessor

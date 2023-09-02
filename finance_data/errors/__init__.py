@@ -1,1 +1,1 @@
-from .configuration_error import ConfigurationError
+from finance_data.errors.configuration_error import ConfigurationError

@@ -1,6 +1,6 @@
 from finance_data.constants import STANDARD_COLUMNS
 from pydantic import BaseModel
-from .preprocessor import Preprocessor
+from finance_data.preprocessors.preprocessor import Preprocessor
 import pandas as pd
 
 

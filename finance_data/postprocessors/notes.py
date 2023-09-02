@@ -1,6 +1,6 @@
 from finance_data.constants import STANDARD_COLUMNS
 import pandas as pd
-from .postprocessor import Postprocessor
+from finance_data.postprocessors.postprocessor import Postprocessor
 
 NOTES_COLUMN = "notes"
 NotesConfig = dict[str, list[str]]

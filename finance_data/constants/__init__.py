@@ -1,1 +1,1 @@
-from .columns import STANDARD_COLUMNS
+from finance_data.constants.columns import STANDARD_COLUMNS
