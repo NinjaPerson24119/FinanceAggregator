@@ -1,0 +1,77 @@
+{
+    "output": {
+        "path": "aggregated_finances.csv",
+        "start_date": "2023-01-01"
+    },
+    "sources": [
+        {
+            "path": "some_bank.csv",
+            "finance_data_config": {
+                "source": "Some Bank",
+                "date_format": "%d-%b-%Y",
+                "column_mapping": {
+                    "Description": "name",
+                    "Date": "date",
+                    "amount": "amount"
+                }
+            },
+            "add_missing_header": [
+                "date",
+                "name",
+                "amount_received",
+                "amount_paid"
+            ],
+            "combine_in_out_amount_config": {
+                "in_column": "amount_received",
+                "out_column": "amount_paid"
+            },
+            "filter_names_with_substrings": [
+                "Online Bill Payment"
+            ]
+        }
+    ],
+    "categories": {
+        "transportation": [
+            "UBERTRIP",
+            "UBER* TRIP"
+        ],
+        "deposit": [
+            "INTERAC e-Transfer From"
+        ],
+        "amazon": [
+            "AMAZON"
+        ],
+        "fastfood": [
+            "SUBWAY",
+            "A&W",
+            "STARBUCKS",
+            "DQ GRILL",
+            "opa",
+            "new york fries",
+            "TIM HORTONS",
+            "KFC",
+            "MARY BROWNS"
+        ],
+        "food delivery": [
+            "skipthedishes",
+            "doordash",
+            "domino",
+            "pizza hut",
+            "UBEREATS",
+            "UBER* EATS"
+
+        ],
+        "furniture": [
+            "IKEA"
+        ],
+        "subscriptions": [
+            "spotify"
+        ]
+    },
+    "notes": {
+        "What did you buy? Pick a better category.": [
+            "amazon",
+            "walmart"
+        ]
+    }
+}
