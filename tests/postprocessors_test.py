@@ -45,8 +45,46 @@ from finance_aggregator.finance_data import (
             ),
             datetime.datetime(2023, 1, 1),
             None,
-        )
+        ),
+        (
+            pd.DataFrame(
+                [
+                    {
+                        StandardColumns.date: datetime.datetime(2023, 1, 1),
+                        StandardColumns.name: "A&W",
+                        StandardColumns.amount: -10.0,
+                    },
+                    {
+                        StandardColumns.date: datetime.datetime(2023, 2, 1),
+                        StandardColumns.name: "AMAZON",
+                        StandardColumns.amount: -12.0,
+                    },
+                    {
+                        StandardColumns.date: datetime.datetime(2023, 2, 17),
+                        StandardColumns.name: "Insurance",
+                        StandardColumns.amount: -12.0,
+                    },
+                ]
+            ),
+            pd.DataFrame(
+                [
+                    {
+                        StandardColumns.date: datetime.datetime(2023, 1, 1),
+                        StandardColumns.name: "A&W",
+                        StandardColumns.amount: -10.0,
+                    },
+                    {
+                        StandardColumns.date: datetime.datetime(2023, 2, 1),
+                        StandardColumns.name: "AMAZON",
+                        StandardColumns.amount: -12.0,
+                    },
+                ]
+            ),
+            datetime.datetime(2023, 1, 1),
+            datetime.datetime(2023, 2, 5),
+        ),
     ],
+    ids=["Missing end date inferred as end of month", "Explicit end date over a month"],
 )
 def test_FilterByDate(
     input_df: pd.DataFrame,
