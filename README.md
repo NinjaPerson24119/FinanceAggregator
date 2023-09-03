@@ -58,3 +58,15 @@ date,name,amount,source,category,notes
 | --- | --- |
 |--config|Path to config file|
 |--work-dir|Path to working directory|
+
+## Environment Setup
+
+```
+# Ubuntu
+sudo apt install python3-venv
+
+pip3 install virtualenv
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
