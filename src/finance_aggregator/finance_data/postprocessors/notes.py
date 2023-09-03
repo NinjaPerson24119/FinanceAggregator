@@ -1,4 +1,4 @@
-from finance_aggregator.finance_data.constants import STANDARD_COLUMNS
+from finance_aggregator.finance_data.constants import StandardColumns
 import pandas as pd
 from finance_aggregator.finance_data.postprocessors.postprocessor import Postprocessor
 
@@ -14,8 +14,11 @@ class WithNotes(Postprocessor):
         notes = ""
         for note, substrings in self.notes_config.items():
             for substring in substrings:
-                if substring.lower() in row[STANDARD_COLUMNS["NAME"]].lower():
-                    notes += f"{note} "
+                if substring.lower() in row[StandardColumns.name].lower():
+                    if notes != "":
+                        notes += ", "
+                    notes += f"{note}"
+                    break
         return notes
 
     def add_and_prefill_notes(self, df: pd.DataFrame) -> pd.DataFrame:

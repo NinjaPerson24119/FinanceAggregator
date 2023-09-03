@@ -1,6 +1,6 @@
 import calendar
 import pandas as pd
-from finance_aggregator.finance_data.constants import STANDARD_COLUMNS
+from finance_aggregator.finance_data.constants import StandardColumns
 import datetime
 from finance_aggregator.finance_data.postprocessors.postprocessor import Postprocessor
 
@@ -17,8 +17,8 @@ class FilterByDate(Postprocessor):
 
     def filter_by_date(self, df: pd.DataFrame) -> pd.DataFrame:
         return df[
-            (df[STANDARD_COLUMNS["DATE"]] >= pd.to_datetime(self.start))
-            & (df[STANDARD_COLUMNS["DATE"]] <= pd.to_datetime(self.end))
+            (df[StandardColumns.date] >= pd.to_datetime(self.start))
+            & (df[StandardColumns.date] <= pd.to_datetime(self.end))
         ]
 
     def postprocess(self, df: pd.DataFrame) -> pd.DataFrame:

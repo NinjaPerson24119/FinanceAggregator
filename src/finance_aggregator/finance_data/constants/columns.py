@@ -1,8 +1,7 @@
-STANDARD_COLUMNS = {
+class StandardColumns:
     # standardized to Pandas datetime
-    "DATE": "date",
-    "NAME": "name",
-    "AMOUNT": "amount",
+    date = "date"
+    name = "name"
+    amount = "amount"
     # this column is not in the CSV, but is added by FinanceData based on the configuration
-    "SOURCE": "source",
-}
+    source = "source"

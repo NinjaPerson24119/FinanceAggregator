@@ -1,4 +1,4 @@
-from finance_aggregator.finance_data.constants import STANDARD_COLUMNS
+from finance_aggregator.finance_data.constants import StandardColumns
 from finance_aggregator.finance_data.postprocessors.postprocessor import Postprocessor
 import pandas as pd
 
@@ -10,7 +10,7 @@ class FilterByName(Postprocessor):
     def filter_by_name(self, df: pd.DataFrame) -> pd.DataFrame:
         copy = df.copy()
         for substring in self.name_substrings_to_filter:
-            copy = copy[~copy[STANDARD_COLUMNS["NAME"]].str.contains(substring)]
+            copy = copy[~copy[StandardColumns.name].str.contains(substring)]
         return copy
 
     def postprocess(self, df: pd.DataFrame) -> pd.DataFrame:

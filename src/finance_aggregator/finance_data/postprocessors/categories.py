@@ -1,4 +1,4 @@
-from finance_aggregator.finance_data.constants import STANDARD_COLUMNS
+from finance_aggregator.finance_data.constants import StandardColumns
 import pandas as pd
 from finance_aggregator.finance_data.postprocessors.postprocessor import Postprocessor
 
@@ -13,7 +13,7 @@ class WithCategories(Postprocessor):
     def category_from_row(self, row: pd.Series) -> str:
         for category_name, substrings in self.categories_config.items():
             for substring in substrings:
-                if substring.lower() in row[STANDARD_COLUMNS["NAME"]].lower():
+                if substring.lower() in row[StandardColumns.name].lower():
                     return category_name
         return ""
 
@@ -28,7 +28,7 @@ class WithCategories(Postprocessor):
 
     def print_uncategorized_names(self, df: pd.DataFrame):
         uncategorized_names = df[df[CATEGORY_COLUMN] == ""][
-            STANDARD_COLUMNS["NAME"]
+            StandardColumns.name
         ].unique()
         if len(uncategorized_names):
             print(f"\t{len(uncategorized_names)} Uncategorized Names...\n")

@@ -1,4 +1,4 @@
-from finance_aggregator.finance_data.constants import STANDARD_COLUMNS
+from finance_aggregator.finance_data.constants import StandardColumns
 from pydantic import BaseModel
 from finance_aggregator.finance_data.preprocessors.preprocessor import Preprocessor
 import pandas as pd
@@ -22,7 +22,7 @@ class CombineInOutColumns(Preprocessor):
         copy[self.in_out_amount_config.in_column] = copy[
             self.in_out_amount_config.in_column
         ].fillna(0)
-        copy[STANDARD_COLUMNS["AMOUNT"]] = copy.apply(
+        copy[StandardColumns.amount] = copy.apply(
             lambda row: row[self.in_out_amount_config.in_column]
             - row[self.in_out_amount_config.out_column],
             axis=1,

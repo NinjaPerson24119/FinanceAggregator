@@ -2,7 +2,7 @@ import pandas as pd
 from finance_aggregator.finance_data import (
     CombineInOutColumnsConfig,
     CombineInOutColumns,
-    STANDARD_COLUMNS,
+    StandardColumns,
 )
 
 
@@ -14,15 +14,17 @@ def test_CombineInOutColumns():
             {"sent": 9.0, "received": 0.0},
             {"sent": 13.4, "received": 15.6},
             {"sent": 19.0, "received": 5.0},
+            {"received": 14.0},
         ]
     )
     expected_df = pd.DataFrame(
         [
-            {STANDARD_COLUMNS["AMOUNT"]: -1.2},
-            {STANDARD_COLUMNS["AMOUNT"]: 7.8},
-            {STANDARD_COLUMNS["AMOUNT"]: -9.0},
-            {STANDARD_COLUMNS["AMOUNT"]: 2.2},
-            {STANDARD_COLUMNS["AMOUNT"]: -14.0},
+            {StandardColumns.amount: -1.2},
+            {StandardColumns.amount: 7.8},
+            {StandardColumns.amount: -9.0},
+            {StandardColumns.amount: 2.2},
+            {StandardColumns.amount: -14.0},
+            {StandardColumns.amount: 14.0},
         ]
     )
 

@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from dataclasses import dataclass, field
 from typing import Optional
 from finance_aggregator.finance_data.errors import ConfigurationError
-from finance_aggregator.finance_data.constants import STANDARD_COLUMNS
+from finance_aggregator.finance_data.constants import StandardColumns
 from finance_aggregator.finance_data.preprocessors import Preprocessor
 from finance_aggregator.finance_data.postprocessors import Postprocessor
 
@@ -31,12 +31,12 @@ class FinanceDataConfigWithProcessors:
 
 class FinanceData:
     __std_columns = [
-        STANDARD_COLUMNS["DATE"],
-        STANDARD_COLUMNS["NAME"],
-        STANDARD_COLUMNS["AMOUNT"],
-        STANDARD_COLUMNS["SOURCE"],
+        StandardColumns.date,
+        StandardColumns.name,
+        StandardColumns.amount,
+        StandardColumns.source,
     ]
-    __std_loaded_columns = [x for x in __std_columns if x != STANDARD_COLUMNS["SOURCE"]]
+    __std_loaded_columns = [x for x in __std_columns if x != StandardColumns.source]
 
     def __init__(self):
         self.__df = pd.DataFrame(columns=self.__std_columns)
@@ -84,7 +84,7 @@ class FinanceData:
         self.__df = self.__df.rename(columns=self.__config.column_mapping)
 
         # add source column
-        self.__df[STANDARD_COLUMNS["SOURCE"]] = self.__config.source
+        self.__df[StandardColumns.source] = self.__config.source
 
         # validate that all standard columns are present
         self.__validate_has_standardized_columns()
@@ -93,15 +93,15 @@ class FinanceData:
         self.__df = self.__df[self.__std_columns]
 
         # convert date cells to datetime
-        self.__df[STANDARD_COLUMNS["DATE"]] = self.__df[STANDARD_COLUMNS["DATE"]].apply(
+        self.__df[StandardColumns.date] = self.__df[StandardColumns.date].apply(
             lambda date: pd.to_datetime(
                 datetime.strptime(str(date), self.__config.date_format)
             )
         )
 
         # remove trailing whitespace
-        self.__df[STANDARD_COLUMNS["NAME"]] = self.__df.apply(
-            lambda row: row[STANDARD_COLUMNS["NAME"]].strip(), axis=1
+        self.__df[StandardColumns.name] = self.__df.apply(
+            lambda row: row[StandardColumns.name].strip(), axis=1
         )
 
     def __process(self):
@@ -123,7 +123,7 @@ class FinanceData:
             return
 
         self.__df = pd.concat([self.__df, other.__df], ignore_index=True)
-        self.__df = self.__df.sort_values(by=STANDARD_COLUMNS["DATE"])
+        self.__df = self.__df.sort_values(by=StandardColumns.date)
 
     def to_csv(self, path: str):
         if self.__df.shape[0] == 0:
