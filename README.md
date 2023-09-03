@@ -16,7 +16,7 @@ Each source is configured in a `config.json` file. See `config_example/config_ex
 ## Usage
 
 ```
-python3 app.py --config config_example/config_example.json
+finance-aggregator --config ./config_example/config_example.json
 
 # Output
 Loading Some Bank...
@@ -69,4 +69,6 @@ pip3 install virtualenv
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+
+pip install -e .
 ```
