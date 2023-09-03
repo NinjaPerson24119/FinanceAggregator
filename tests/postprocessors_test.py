@@ -16,6 +16,36 @@ from finance_aggregator.finance_data import (
 )
 
 
+def test_FilterByName():
+    input_df = pd.DataFrame(
+        [
+            {
+                StandardColumns.date: "2023-01-01",
+                StandardColumns.name: "Card Payment",
+                StandardColumns.amount: 10.0,
+            },
+            {
+                StandardColumns.date: "2023-01-02",
+                StandardColumns.name: "AMAZON",
+                StandardColumns.amount: 12.0,
+            },
+        ]
+    )
+    expected_df = pd.DataFrame(
+        [
+            {
+                StandardColumns.date: "2023-01-01",
+                StandardColumns.name: "Card Payment",
+                StandardColumns.amount: 10.0,
+            },
+        ]
+    )
+    postprocessor = FilterByName(["AMAZ"])
+    result = postprocessor.postprocess(input_df)
+
+    pd.testing.assert_frame_equal(result, expected_df)
+
+
 @pytest.mark.parametrize(
     "input_df,expected_df,start_date,end_date",
     [
@@ -92,8 +122,8 @@ def test_FilterByDate(
     start_date: datetime.datetime,
     end_date: Optional[datetime.datetime],
 ):
-    preprocessor = FilterByDate(start_date, end_date)
-    result = preprocessor.postprocess(input_df)
+    postprocessor = FilterByDate(start_date, end_date)
+    result = postprocessor.postprocess(input_df)
 
     pd.testing.assert_frame_equal(result, expected_df)
 
@@ -127,8 +157,8 @@ def test_NegateAmount():
             },
         ]
     )
-    preprocessor = NegateAmount()
-    result = preprocessor.postprocess(input_df)
+    postprocessor = NegateAmount()
+    result = postprocessor.postprocess(input_df)
 
     pd.testing.assert_frame_equal(result, expected_df)
 
@@ -190,8 +220,8 @@ def test_WithCategories():
         "Fast food": ["mcdonalds"],
         "Online Shopping": ["amazon", "ebay"],
     }
-    preprocessor = WithCategories(config)
-    result = preprocessor.postprocess(input_df)
+    postprocessor = WithCategories(config)
+    result = postprocessor.postprocess(input_df)
 
     pd.testing.assert_frame_equal(result, expected_df)
 
@@ -255,7 +285,7 @@ def test_WithNotes():
         "Online Shopping": ["amazon", "ebay"],
         "What did you buy?": ["husky"],
     }
-    preprocessor = WithNotes(config)
-    result = preprocessor.postprocess(input_df)
+    postprocessor = WithNotes(config)
+    result = postprocessor.postprocess(input_df)
 
     pd.testing.assert_frame_equal(result, expected_df)
