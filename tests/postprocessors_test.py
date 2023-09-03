@@ -1,4 +1,7 @@
+import pytest
 import pandas as pd
+import datetime
+from typing import Optional
 from finance_aggregator.finance_data import (
     CategoriesConfig,
     WithCategories,
@@ -11,6 +14,50 @@ from finance_aggregator.finance_data import (
     NegateAmount,
     StandardColumns,
 )
+
+
+@pytest.mark.parametrize(
+    "input_df,expected_df,start_date,end_date",
+    [
+        (
+            pd.DataFrame(
+                [
+                    {
+                        StandardColumns.date: datetime.datetime(2023, 1, 1),
+                        StandardColumns.name: "A&W",
+                        StandardColumns.amount: -10.0,
+                    },
+                    {
+                        StandardColumns.date: datetime.datetime(2023, 2, 1),
+                        StandardColumns.name: "AMAZON",
+                        StandardColumns.amount: -12.0,
+                    },
+                ]
+            ),
+            pd.DataFrame(
+                [
+                    {
+                        StandardColumns.date: datetime.datetime(2023, 1, 1),
+                        StandardColumns.name: "A&W",
+                        StandardColumns.amount: -10.0,
+                    },
+                ]
+            ),
+            datetime.datetime(2023, 1, 1),
+            None,
+        )
+    ],
+)
+def test_FilterByDate(
+    input_df: pd.DataFrame,
+    expected_df: pd.DataFrame,
+    start_date: datetime.datetime,
+    end_date: Optional[datetime.datetime],
+):
+    preprocessor = FilterByDate(start_date, end_date)
+    result = preprocessor.postprocess(input_df)
+
+    pd.testing.assert_frame_equal(result, expected_df)
 
 
 def test_NegateAmount():
@@ -101,7 +148,7 @@ def test_WithCategories():
             },
         ]
     )
-    config = {
+    config: CategoriesConfig = {
         "Fast food": ["mcdonalds"],
         "Online Shopping": ["amazon", "ebay"],
     }
@@ -164,7 +211,7 @@ def test_WithNotes():
             },
         ]
     )
-    config = {
+    config: NotesConfig = {
         "What did you buy on Amazon?": ["amazon", "amazon"],
         "What did you buy on eBay?": ["ebay"],
         "Online Shopping": ["amazon", "ebay"],
