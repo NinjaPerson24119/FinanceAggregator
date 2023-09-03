@@ -1,0 +1,5 @@
+date,name,amount,source,category,notes
+2023-01-01,AMAZON,-50.0,Some Bank,amazon,What did you buy? Pick a better category.
+2023-01-02,UBERTRIP,-15.0,Some Bank,transportation,
+2023-01-04,IKEA,-269.72,Some Bank,furniture,
+2023-01-20,INTERAC e-Transfer From Human,200.0,Some Bank,deposit,

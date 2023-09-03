@@ -48,13 +48,18 @@ def parse_args() -> AppArgs:
         help="Path to working directory. Adds to the beginning of all paths in config file. Defaults to current directory.",
         default=os.getcwd(),
     )
+    parser.add_argument(
+        "-o",
+        "--output",
+        help="Path to output file. Defaults to output.csv in working directory.",
+        default="output.csv",
+    )
     args = parser.parse_args()
 
     return AppArgs(config_path=args.config, work_dir=args.work_dir)
 
 
 def rebase_config_paths(config: AppConfig, work_dir: str) -> AppConfig:
-    config.output.path = os.path.join(work_dir, config.output.path)
     for source in config.sources:
         source.path = os.path.join(work_dir, source.path)
     return config
@@ -64,14 +69,15 @@ def main():
     app_args = parse_args()
     app_config = load_app_config(os.path.join(app_args.work_dir, app_args.config_path))
     app_config = rebase_config_paths(app_config, app_args.work_dir)
+    output_path = os.path.join(app_args.work_dir, app_args.output)
 
     finance_data_objects = build_finance_data_objects(app_config)
     combined_finance_data = FinanceData()
     for finance_data in finance_data_objects:
         combined_finance_data.combine(finance_data)
 
-    combined_finance_data.to_csv(app_config.output.path)
-    print(f"Saved to {app_config.output.path}")
+    combined_finance_data.to_csv(output_path)
+    print(f"Saved to {output_path}")
 
 
 if __name__ == "__main__":

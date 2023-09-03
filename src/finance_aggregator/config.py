@@ -9,7 +9,6 @@ from typing import Optional
 
 
 class OutputConfig(BaseModel):
-    path: str
     start_date: str
     end_date: Optional[str] = None
 
