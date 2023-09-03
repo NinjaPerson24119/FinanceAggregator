@@ -27,6 +27,11 @@ class CombineInOutColumns(Preprocessor):
             - row[self.in_out_amount_config.out_column],
             axis=1,
         )
+        copy.drop(
+            [self.in_out_amount_config.in_column, self.in_out_amount_config.out_column],
+            axis=1,
+            inplace=True,
+        )
         return copy
 
     def preprocess(self, df: pd.DataFrame) -> pd.DataFrame:
