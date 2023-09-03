@@ -1,8 +1,0 @@
-python_version >= "3.10"
-
-pandas==1.5.0
-pydantic==2.3.0
-pydantic_core==2.6.3
-black
-pre-commit
-pytest==7.4.1
