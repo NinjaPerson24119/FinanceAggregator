@@ -48,28 +48,91 @@ def test_NegateAmount():
     pd.testing.assert_frame_equal(result, expected_df)
 
 
+def test_WithCategories():
+    input_df = pd.DataFrame(
+        [
+            {
+                StandardColumns.date: "2023-01-01",
+                StandardColumns.name: "Unknown Vendor",
+                StandardColumns.amount: -10.0,
+            },
+            {
+                StandardColumns.date: "2023-01-02",
+                StandardColumns.name: "AMAZON",
+                StandardColumns.amount: -12.0,
+            },
+            {
+                StandardColumns.date: "2023-01-02",
+                StandardColumns.name: "EBAY",
+                StandardColumns.amount: -13.0,
+            },
+            {
+                StandardColumns.date: "2023-01-02",
+                StandardColumns.name: "McDonalds",
+                StandardColumns.amount: -5,
+            },
+        ]
+    )
+    expected_df = pd.DataFrame(
+        [
+            {
+                StandardColumns.date: "2023-01-01",
+                StandardColumns.name: "Unknown Vendor",
+                StandardColumns.amount: -10.0,
+                CATEGORY_COLUMN: "",
+            },
+            {
+                StandardColumns.date: "2023-01-02",
+                StandardColumns.name: "AMAZON",
+                StandardColumns.amount: -12.0,
+                CATEGORY_COLUMN: "Online Shopping",
+            },
+            {
+                StandardColumns.date: "2023-01-02",
+                StandardColumns.name: "EBAY",
+                StandardColumns.amount: -13.0,
+                CATEGORY_COLUMN: "Online Shopping",
+            },
+            {
+                StandardColumns.date: "2023-01-02",
+                StandardColumns.name: "McDonalds",
+                StandardColumns.amount: -5,
+                CATEGORY_COLUMN: "Fast food",
+            },
+        ]
+    )
+    config = {
+        "Fast food": ["mcdonalds"],
+        "Online Shopping": ["amazon", "ebay"],
+    }
+    preprocessor = WithCategories(config)
+    result = preprocessor.postprocess(input_df)
+
+    pd.testing.assert_frame_equal(result, expected_df)
+
+
 def test_WithNotes():
     input_df = pd.DataFrame(
         [
             {
                 StandardColumns.date: "2023-01-01",
                 StandardColumns.name: "Some purchase",
-                StandardColumns.amount: 10.0,
+                StandardColumns.amount: -10.0,
             },
             {
                 StandardColumns.date: "2023-01-02",
                 StandardColumns.name: "AMAZON",
-                StandardColumns.amount: 12.0,
+                StandardColumns.amount: -12.0,
             },
             {
                 StandardColumns.date: "2023-01-02",
                 StandardColumns.name: "EBAY",
-                StandardColumns.amount: 13.0,
+                StandardColumns.amount: -13.0,
             },
             {
                 StandardColumns.date: "2023-01-02",
                 StandardColumns.name: "HUSKY",
-                StandardColumns.amount: 5,
+                StandardColumns.amount: -5,
             },
         ]
     )
@@ -78,25 +141,25 @@ def test_WithNotes():
             {
                 StandardColumns.date: "2023-01-01",
                 StandardColumns.name: "Some purchase",
-                StandardColumns.amount: 10.0,
+                StandardColumns.amount: -10.0,
                 NOTES_COLUMN: "",
             },
             {
                 StandardColumns.date: "2023-01-02",
                 StandardColumns.name: "AMAZON",
-                StandardColumns.amount: 12.0,
+                StandardColumns.amount: -12.0,
                 NOTES_COLUMN: "What did you buy on Amazon?, Online Shopping",
             },
             {
                 StandardColumns.date: "2023-01-02",
                 StandardColumns.name: "EBAY",
-                StandardColumns.amount: 13.0,
+                StandardColumns.amount: -13.0,
                 NOTES_COLUMN: "What did you buy on eBay?, Online Shopping",
             },
             {
                 StandardColumns.date: "2023-01-02",
                 StandardColumns.name: "HUSKY",
-                StandardColumns.amount: 5,
+                StandardColumns.amount: -5,
                 NOTES_COLUMN: "What did you buy?",
             },
         ]
