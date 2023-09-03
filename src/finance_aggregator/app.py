@@ -32,6 +32,7 @@ def load_app_config(config_path: str) -> AppConfig:
 class AppArgs:
     config_path: str
     work_dir: str
+    output_path: str
 
 
 def parse_args() -> AppArgs:
@@ -56,7 +57,9 @@ def parse_args() -> AppArgs:
     )
     args = parser.parse_args()
 
-    return AppArgs(config_path=args.config, work_dir=args.work_dir)
+    return AppArgs(
+        config_path=args.config, work_dir=args.work_dir, output_path=args.output
+    )
 
 
 def rebase_config_paths(config: AppConfig, work_dir: str) -> AppConfig:
@@ -69,7 +72,7 @@ def main():
     app_args = parse_args()
     app_config = load_app_config(os.path.join(app_args.work_dir, app_args.config_path))
     app_config = rebase_config_paths(app_config, app_args.work_dir)
-    output_path = os.path.join(app_args.work_dir, app_args.output)
+    output_path = os.path.join(app_args.work_dir, app_args.output_path)
 
     finance_data_objects = build_finance_data_objects(app_config)
     combined_finance_data = FinanceData()

@@ -2,6 +2,7 @@ import pytest
 import pandas as pd
 import os
 import tempfile
+import subprocess
 
 
 @pytest.mark.parametrize(
@@ -21,10 +22,13 @@ def test_e2e_cli(config_filename, output_csv_filename, expected_output_csv_filen
     config_path = os.path.join(test_dir, config_filename)
     output_path = os.path.join(temp_dir, output_csv_filename)
 
-    os.system(
-        f"finance-aggregator --config {os.path.join(test_dir, config_path)} --output f{output_path}"
-    )
-    assert os.path.exists(output_path)
+    if os.path.exists(output_path):
+        os.remove(output_path)
+
+    command = f"finance-aggregator --config '{config_path}' --output '{output_path}'"
+    output = subprocess.check_output(command, shell=True, text=True)
+    print(output)
+    assert os.path.exists(output_path), f"Output file {output_path} does not exist"
 
     output_csv = pd.read_csv(output_path)
     expected_output_csv = pd.read_csv(
