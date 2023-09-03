@@ -16,7 +16,7 @@ Each source is configured in a `config.json` file. See `config_example/config_ex
 ## Usage
 
 ```
-finance-aggregator --config ./config_example/config_example.json
+finance-aggregator --config ./config_example/config_example.json --output ./output.csv
 
 # Output
 Loading Some Bank...
@@ -58,6 +58,7 @@ date,name,amount,source,category,notes
 | --- | --- |
 |--config|Path to config file|
 |--work-dir|Path to working directory|
+|--output|Path to output file|
 
 ## Environment Setup
 
