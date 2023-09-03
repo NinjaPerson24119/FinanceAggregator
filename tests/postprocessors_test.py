@@ -13,6 +13,41 @@ from finance_aggregator.finance_data import (
 )
 
 
+def test_NegateAmount():
+    input_df = pd.DataFrame(
+        [
+            {
+                StandardColumns.date: "2023-01-01",
+                StandardColumns.name: "Card Payment",
+                StandardColumns.amount: -10.0,
+            },
+            {
+                StandardColumns.date: "2023-01-02",
+                StandardColumns.name: "AMAZON",
+                StandardColumns.amount: 12.0,
+            },
+        ]
+    )
+    expected_df = pd.DataFrame(
+        [
+            {
+                StandardColumns.date: "2023-01-01",
+                StandardColumns.name: "Card Payment",
+                StandardColumns.amount: 10.0,
+            },
+            {
+                StandardColumns.date: "2023-01-02",
+                StandardColumns.name: "AMAZON",
+                StandardColumns.amount: -12.0,
+            },
+        ]
+    )
+    preprocessor = NegateAmount()
+    result = preprocessor.postprocess(input_df)
+
+    pd.testing.assert_frame_equal(result, expected_df)
+
+
 def test_WithNotes():
     input_df = pd.DataFrame(
         [
