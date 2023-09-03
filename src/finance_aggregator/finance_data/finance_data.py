@@ -16,7 +16,7 @@ class FinanceDataConfig(BaseModel):
     source: str
     column_mapping: dict[str, str]
     date_format: str
-    add_missing_header: Optional[list[str]]
+    add_missing_header: Optional[list[str]] = None
 
 
 @dataclass
