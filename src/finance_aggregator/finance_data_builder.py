@@ -9,10 +9,13 @@ from finance_aggregator.finance_data import (
     WithCategories,
     WithNotes,
     ConfigurationError,
+    Preprocessor,
+    Postprocessor,
 )
 from finance_aggregator.finance_data.preprocessors import CombineInOutColumns
 from finance_aggregator.config import AppConfig, SourceConfig
 from datetime import datetime
+from typing import List, Tuple
 
 date_format = "%Y-%m-%d"
 
@@ -29,37 +32,39 @@ def build_source(app_config: AppConfig, source_config: SourceConfig) -> FinanceD
     end_date = None
     if app_config.output.end_date:
         end_date = datetime.strptime(app_config.output.end_date, date_format).date()
-    finance_data_config_with_processors.postprocessors.append(
-        FilterByDate(start_date, end_date)
-    )
 
-    # source specific pre-processors
-    if source_config.combine_in_out_amount_config:
-        finance_data_config_with_processors.preprocessors.append(
-            CombineInOutColumns(source_config.combine_in_out_amount_config)
-        )
+    ConditionalPreprocessorType = Tuple[Preprocessor, bool]
+    conditional_preprocessors: List[ConditionalPreprocessorType] = [
+        # source specific pre-processors
+        [
+            CombineInOutColumns(source_config.combine_in_out_amount_config),
+            source_config.combine_in_out_amount_config,
+        ],
+    ]
+    for preprocessor, condition in conditional_preprocessors:
+        if condition:
+            finance_data_config_with_processors.preprocessors.append(preprocessor)
 
-    # source specific post-processors
-    if source_config.negate_amount:
-        finance_data_config_with_processors.postprocessors.append(NegateAmount())
-    if source_config.filter_names_with_substrings:
-        finance_data_config_with_processors.postprocessors.append(
-            FilterByName(source_config.filter_names_with_substrings)
-        )
-
-    # global post-processors
-    if app_config.filter_names_with_substrings:
-        finance_data_config_with_processors.postprocessors.append(
-            FilterByName(app_config.filter_names_with_substrings)
-        )
-    if app_config.categories:
-        finance_data_config_with_processors.postprocessors.append(
-            WithCategories(app_config.categories)
-        )
-    if app_config.notes:
-        finance_data_config_with_processors.postprocessors.append(
-            WithNotes(app_config.notes)
-        )
+    ConditionalPostprocessorType = Tuple[Postprocessor, bool]
+    conditional_postprocessors: List[ConditionalPostprocessorType] = [
+        # global post-processors
+        [FilterByDate(start_date, end_date), True],
+        [
+            FilterByName(app_config.filter_names_with_substrings),
+            app_config.filter_names_with_substrings,
+        ],
+        [WithCategories(app_config.categories), app_config.categories],
+        [WithNotes(app_config.notes), app_config.notes],
+        # source specific post-processors
+        [NegateAmount(), source_config.negate_amount],
+        [
+            FilterByName(source_config.filter_names_with_substrings),
+            source_config.filter_names_with_substrings,
+        ],
+    ]
+    for postprocessor, condition in conditional_postprocessors:
+        if condition:
+            finance_data_config_with_processors.postprocessors.append(postprocessor)
 
     finance_data = FinanceData.from_csv(
         source_config.path,
